@@ -1,0 +1,8 @@
+# 3. Funkcja obliczająca pole powierzchni koła
+pole_kola <- function(r) {
+  return(pi * r^2)
+}
+# 4. Funkcja licząca przeciwprostokątną
+dlugosc_przeciwprostokatnej <- function(a, b) {
+  sqrt(a^2 + b^2)
+}
