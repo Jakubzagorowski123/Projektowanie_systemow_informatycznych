@@ -1,0 +1,59 @@
+
+# install.packages(c("qdap", "wordcloud", "RColorBrewer"))
+library(qdap)
+library(wordcloud)
+library(RColorBrewer)
+
+# Krok 2: Wczytanie przemówień
+przemowienie_2021 <- tolower(readLines(file.choose()))
+przemowienie_2024 <- tolower(readLines(file.choose()))
+
+# Krok 3: Funkcja przetwarzająca tekst
+przetworz_tekst <- function(text) {
+  text <- gsub("[[:punct:]]", "", text)  # Usuwanie interpunkcji
+  text <- gsub("\\d+", "", text)         # Usuwanie liczb
+  freq_terms(text, stopwords = Top200Words)  # Analiza częstości
+}
+
+# Przetwarzanie obu przemówień
+czestosci_2021 <- przetworz_tekst(przemowienie_2021)
+czestosci_2024 <- przetworz_tekst(przemowienie_2024)
+
+# Krok 4: Wizualizacja
+par(mfrow = c(1, 2))  # Dwa wykresy obok siebie
+
+# Wykresy słupkowe
+plot(czestosci_2021, title = "2021 - Najczęstsze słowa")
+plot(czestosci_2024, title = "2024 - Najczęstsze słowa")
+
+# Chmury słów
+par(mfrow = c(1, 2))
+wordcloud(
+  czestosci_2021$WORD, czestosci_2021$FREQ,
+  min.freq = 2, max.words = 50,
+  colors = brewer.pal(9, "Blues"), 
+  main = "2021"
+))
+
+wordcloud(
+  czestosci_2024$WORD, czestosci_2024$FREQ,
+  min.freq = 2, max.words = 50,
+  colors = brewer.pal(9, "Reds"), 
+  main = "2024"
+))
+
+# Krok 5: Analiza porównawcza
+top_2021 <- head(czestosci_2021, 10)
+top_2024 <- head(czestosci_2024, 10)
+
+cat("Wspólne kluczowe słowa:\n")
+print(intersect(top_2021$WORD, top_2024$WORD))
+
+cat("\nUnikalne dla 2021:\n")
+print(setdiff(top_2021$WORD, top_2024$WORD))
+
+cat("\nUnikalne dla 2024:\n")
+print(setdiff(top_2024$WORD, top_2021$WORD))
+
+# Przywróć domyślne ustawienia wykresów
+par(mfrow = c(1, 1))
